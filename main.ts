@@ -36,7 +36,7 @@ await main(function* () {
     params: Deno.env.get("POLYGON_API_KEY"),
   }));
 
-  setInterval(insertToSupabase, 5000);
+  // setInterval(insertToSupabase, 5000);
 
   // for (const message of yield* each(socket)) {
   //   const wsMessage = message as WebSocketMessageEvent;
