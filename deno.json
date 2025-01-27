@@ -3,8 +3,10 @@
     "start": "deno run --allow-net --allow-read -E main.ts"
   },
   "imports": {
+    "@babia/uuid-v7": "jsr:@babia/uuid-v7@^0.2.0",
     "@effection-contrib/websocket": "jsr:@effection-contrib/websocket@^1.0.1",
     "@effection/effection": "jsr:@effection/effection@^3.2.0",
-    "@std/dotenv": "jsr:@std/dotenv@^0.225.3"
+    "@std/dotenv": "jsr:@std/dotenv@^0.225.3",
+    "@supabase/supabase-js": "jsr:@supabase/supabase-js@^2.48.1"
   }
 }
