@@ -1,0 +1,54 @@
+{
+  "version": "4",
+  "specifiers": {
+    "jsr:@effection-contrib/websocket@^1.0.1": "1.0.1",
+    "jsr:@effection/effection@^3.2.0": "3.2.0",
+    "jsr:@frontside/continuation@0.1.6": "0.1.6",
+    "jsr:@std/assert@1.0.10": "1.0.10",
+    "jsr:@std/dotenv@~0.225.3": "0.225.3",
+    "jsr:@std/internal@^1.0.5": "1.0.5",
+    "npm:effection@3.0.3": "3.0.3"
+  },
+  "jsr": {
+    "@effection-contrib/websocket@1.0.1": {
+      "integrity": "1a286665e9a124fc501a0be492f987f96f7bf64b1f36cbd6418f0879ac01f634",
+      "dependencies": [
+        "npm:effection"
+      ]
+    },
+    "@effection/effection@3.2.0": {
+      "integrity": "28865ac2be00b79236fd23e7c4803884921eb8d5637f57e3e12c0abae7b23d63",
+      "dependencies": [
+        "jsr:@frontside/continuation",
+        "jsr:@std/assert"
+      ]
+    },
+    "@frontside/continuation@0.1.6": {
+      "integrity": "f36a3b9ccdf49f0b15778a5e11a37d91bb097f67522f17ca5fbd668560b31c17"
+    },
+    "@std/assert@1.0.10": {
+      "integrity": "59b5cbac5bd55459a19045d95cc7c2ff787b4f8527c0dd195078ff6f9481fbb3",
+      "dependencies": [
+        "jsr:@std/internal"
+      ]
+    },
+    "@std/dotenv@0.225.3": {
+      "integrity": "a95e5b812c27b0854c52acbae215856d9cce9d4bbf774d938c51d212711e8d4a"
+    },
+    "@std/internal@1.0.5": {
+      "integrity": "54a546004f769c1ac9e025abd15a76b6671ddc9687e2313b67376125650dc7ba"
+    }
+  },
+  "npm": {
+    "effection@3.0.3": {
+      "integrity": "sha512-9ASCaJ44flDoEKUUJtn9drfIomn2z30sZUw7//crbq+eltMu09AyILcouXwpMkcHR8TsD5hDvTTsOLHswWRxXQ=="
+    }
+  },
+  "workspace": {
+    "dependencies": [
+      "jsr:@effection-contrib/websocket@^1.0.1",
+      "jsr:@effection/effection@^3.2.0",
+      "jsr:@std/dotenv@~0.225.3"
+    ]
+  }
+}

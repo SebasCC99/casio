@@ -1,0 +1,10 @@
+{
+  "tasks": {
+    "start": "deno run --allow-net --allow-read -E main.ts"
+  },
+  "imports": {
+    "@effection-contrib/websocket": "jsr:@effection-contrib/websocket@^1.0.1",
+    "@effection/effection": "jsr:@effection/effection@^3.2.0",
+    "@std/dotenv": "jsr:@std/dotenv@^0.225.3"
+  }
+}
