@@ -36,17 +36,20 @@ await main(function* () {
     params: Deno.env.get("POLYGON_API_KEY"),
   }));
 
-  // setInterval(insertToSupabase, 5000);
+  setInterval(insertToSupabase, 5000);
 
-  for (const message of yield* each(socket)) {
-    const wsMessage = message as WebSocketMessageEvent;
-    const [data] = JSON.parse(wsMessage.data) as PolygonWSMessageData[];
+  // for (const message of yield* each(socket)) {
+  //   const wsMessage = message as WebSocketMessageEvent;
+  //   const [data] = JSON.parse(wsMessage.data) as PolygonWSMessageData[];
 
-    if (data.status === "auth_success" && data.message === "authenticated") {
-      socket.send(
-        JSON.stringify({ "action": "subscribe", "params": "AM.AAPL" }),
-      );
-    }
-    yield* each.next();
-  }
+  //   console.log(data);
+
+  //   if (data.status === "auth_success" && data.message === "authenticated") {
+  //     socket.send(
+  //       // A for second aggregates - AM for minute aggregates
+  //       JSON.stringify({ "action": "subscribe", "params": "A.AAPL" }),
+  //     );
+  //   }
+  //   yield* each.next();
+  // }
 });
