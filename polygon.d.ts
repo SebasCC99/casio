@@ -35,8 +35,22 @@ type WebSocketMessageEvent = {
   lastEventId: string;
 };
 
-type PolygonWSMessageData = {
+type WebSocketMessageData = {
   ev: string;
   status: string;
   message: string;
+};
+
+type Aggregate = {
+  ticker: string;
+  open: number;
+  close: number;
+  high: number;
+  low: number;
+  vwap: number | null;
+  aggregate_transactions: number | null;
+  aggregate_start_time: number | null;
+  aggregate_end_time: number | null;
+  aggregate_type: string;
+  request_id: string | null;
 };

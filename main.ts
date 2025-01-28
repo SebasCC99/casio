@@ -11,14 +11,14 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_ANON_KEY")!,
 );
 
-async function insertToSupabase() {
+async function insertToSupabase(aggregate: Aggregate) {
   try {
     const { error } = await supabase
-      .from("casio")
+      .from("porsche")
       .insert({
         id: generate(),
         created_at: new Date().toISOString(),
-        title: "dummy test",
+        ...aggregate,
       });
 
     if (error) throw error;
@@ -29,18 +29,32 @@ async function insertToSupabase() {
 }
 
 await main(function* () {
-  const socket = yield* useWebSocket(Deno.env.get("WEBSOCKET_CLUSTER_URL")!);
+  // const socket = yield* useWebSocket(Deno.env.get("WEBSOCKET_CLUSTER_URL")!);
 
-  socket.send(JSON.stringify({
-    action: "auth",
-    params: Deno.env.get("POLYGON_API_KEY"),
-  }));
+  // socket.send(JSON.stringify({
+  //   action: "auth",
+  //   params: Deno.env.get("POLYGON_API_KEY"),
+  // }));
 
-  // setInterval(insertToSupabase, 5000);
+  // setInterval(function () {
+  //   insertToSupabase({
+  //     ticker: "AAPL",
+  //     open: 230,
+  //     close: 229.96,
+  //     high: 230.01,
+  //     low: 229.96,
+  //     vwap: 229.99,
+  //     aggregate_transactions: 121,
+  //     aggregate_start_time: 1738066560000,
+  //     aggregate_end_time: null,
+  //     aggregate_type: "minute",
+  //     request_id: "6a7e466379af0a71039d60cc78e72282",
+  //   });
+  // }, 1000);
 
   // for (const message of yield* each(socket)) {
   //   const wsMessage = message as WebSocketMessageEvent;
-  //   const [data] = JSON.parse(wsMessage.data) as PolygonWSMessageData[];
+  //   const [data] = JSON.parse(wsMessage.data) as WebSocketMessageData[];
 
   //   console.log(data);
 
