@@ -67,5 +67,7 @@ await main(function* () {
 });
 
 Deno.serve(() => {
-  return new Response("WebSocket API connection server");
+  return new Response("<h1>WebSocket Server Running</h1>", {
+    headers: { "content-type": "text/html" },
+  });
 });
