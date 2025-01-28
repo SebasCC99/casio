@@ -65,9 +65,3 @@ await main(function* () {
     yield* each.next();
   }
 });
-
-Deno.serve(() => {
-  return new Response("<h1>WebSocket Server Running</h1>", {
-    headers: { "content-type": "text/html" },
-  });
-});
