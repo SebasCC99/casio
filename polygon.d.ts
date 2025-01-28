@@ -41,16 +41,28 @@ type WebSocketMessageData = {
   message: string;
 };
 
+type Schema = {
+  ticker: string; // sym
+  open: number; // o
+  close: number; // c
+  high: number; // h
+  low: number; // l
+  vwap: number | null; // vw
+  aggregate_transactions?: number | null; //
+  aggregate_start_time: number | null; // s
+  aggregate_end_time: number | null; // e
+  aggregate_type: string; // ev
+  request_id?: string | null; //
+};
+
 type Aggregate = {
-  ticker: string;
-  open: number;
-  close: number;
-  high: number;
-  low: number;
-  vwap: number | null;
-  aggregate_transactions: number | null;
-  aggregate_start_time: number | null;
-  aggregate_end_time: number | null;
-  aggregate_type: string;
-  request_id: string | null;
+  sym: string; // sym
+  o: number; // o
+  c: number; // c
+  h: number; // h
+  l: number; // l
+  vw: number; // vw
+  s: number; // s
+  e: number; // e
+  ev: string; // ev
 };

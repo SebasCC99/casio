@@ -11,7 +11,7 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_ANON_KEY")!,
 );
 
-async function insertToSupabase(aggregate: Aggregate) {
+async function insertToSupabase(aggregate: Schema) {
   try {
     const { error } = await supabase
       .from("porsche")
@@ -36,34 +36,32 @@ await main(function* () {
     params: Deno.env.get("POLYGON_API_KEY"),
   }));
 
-  // setInterval(function () {
-  //   insertToSupabase({
-  //     ticker: "AAPL",
-  //     open: 230,
-  //     close: 229.96,
-  //     high: 230.01,
-  //     low: 229.96,
-  //     vwap: 229.99,
-  //     aggregate_transactions: 121,
-  //     aggregate_start_time: 1738066560000,
-  //     aggregate_end_time: null,
-  //     aggregate_type: "minute",
-  //     request_id: "6a7e466379af0a71039d60cc78e72282",
-  //   });
-  // }, 1000);
-
   for (const message of yield* each(socket)) {
     const wsMessage = message as WebSocketMessageEvent;
-    const [data] = JSON.parse(wsMessage.data) as WebSocketMessageData[];
+    // Want to improve type safety of data
+    const [data] = JSON.parse(wsMessage.data);
 
-    console.log(data);
+    if (data.message === "authenticated") {
+      socket.send(
+        JSON.stringify({ "action": "subscribe", "params": "A.AAPL" }),
+      );
+    }
 
-    // if (data.status === "auth_success" && data.message === "authenticated") {
-    //   socket.send(
-    //     // A for second aggregates - AM for minute aggregates
-    //     JSON.stringify({ "action": "subscribe", "params": "A.AAPL" }),
-    //   );
-    // }
+    if (data.sym) {
+      const wsData = data as Aggregate;
+      insertToSupabase({
+        ticker: wsData.sym,
+        open: wsData.o,
+        close: wsData.c,
+        high: wsData.h,
+        low: wsData.l,
+        vwap: wsData.vw,
+        aggregate_start_time: wsData.s,
+        aggregate_end_time: wsData.e,
+        aggregate_type: wsData.ev,
+      });
+    }
+
     yield* each.next();
   }
 });
