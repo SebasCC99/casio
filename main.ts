@@ -65,3 +65,7 @@ await main(function* () {
     yield* each.next();
   }
 });
+
+Deno.serve(() => {
+  return new Response("WebSocket API connection server");
+});
