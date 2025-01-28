@@ -29,12 +29,12 @@ async function insertToSupabase(aggregate: Aggregate) {
 }
 
 await main(function* () {
-  // const socket = yield* useWebSocket(Deno.env.get("WEBSOCKET_CLUSTER_URL")!);
+  const socket = yield* useWebSocket(Deno.env.get("WEBSOCKET_CLUSTER_URL")!);
 
-  // socket.send(JSON.stringify({
-  //   action: "auth",
-  //   params: Deno.env.get("POLYGON_API_KEY"),
-  // }));
+  socket.send(JSON.stringify({
+    action: "auth",
+    params: Deno.env.get("POLYGON_API_KEY"),
+  }));
 
   // setInterval(function () {
   //   insertToSupabase({
@@ -52,18 +52,18 @@ await main(function* () {
   //   });
   // }, 1000);
 
-  // for (const message of yield* each(socket)) {
-  //   const wsMessage = message as WebSocketMessageEvent;
-  //   const [data] = JSON.parse(wsMessage.data) as WebSocketMessageData[];
+  for (const message of yield* each(socket)) {
+    const wsMessage = message as WebSocketMessageEvent;
+    const [data] = JSON.parse(wsMessage.data) as WebSocketMessageData[];
 
-  //   console.log(data);
+    console.log(data);
 
-  //   if (data.status === "auth_success" && data.message === "authenticated") {
-  //     socket.send(
-  //       // A for second aggregates - AM for minute aggregates
-  //       JSON.stringify({ "action": "subscribe", "params": "A.AAPL" }),
-  //     );
-  //   }
-  //   yield* each.next();
-  // }
+    // if (data.status === "auth_success" && data.message === "authenticated") {
+    //   socket.send(
+    //     // A for second aggregates - AM for minute aggregates
+    //     JSON.stringify({ "action": "subscribe", "params": "A.AAPL" }),
+    //   );
+    // }
+    yield* each.next();
+  }
 });
