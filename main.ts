@@ -11,28 +11,28 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_ANON_KEY")!,
 );
 
-Deno.serve((_req) => new Response("Hello, world"));
+// Deno.serve((_req) => new Response("Hello, world"));
 
-// const socket = new WebSocket(Deno.env.get("WEBSOCKET_CLUSTER_URL")!);
+const socket = new WebSocket(Deno.env.get("WEBSOCKET_CLUSTER_URL")!);
 
-// socket.addEventListener("open", () => {
-//   console.log(socket.readyState);
+socket.addEventListener("open", () => {
+  console.log(socket.readyState);
 
-//   socket.send(JSON.stringify({
-//     action: "auth",
-//     params: Deno.env.get("POLYGON_API_KEY"),
-//   }));
-// });
+  socket.send(JSON.stringify({
+    action: "auth",
+    params: Deno.env.get("POLYGON_API_KEY"),
+  }));
+});
 
-// socket.addEventListener("message", (event) => {
-//   console.log(event.data);
+socket.addEventListener("message", (event) => {
+  console.log(event.data);
 
-//   if (event.data.message === "authenticated") {
-//     socket.send(
-//       JSON.stringify({ "action": "subscribe", "params": "A.AAPL" }),
-//     );
-//   }
-// });
+  if (event.data.message === "authenticated") {
+    socket.send(
+      JSON.stringify({ "action": "subscribe", "params": "A.AAPL" }),
+    );
+  }
+});
 
 // async function insertToSupabase(aggregate: Schema) {
 //   try {
