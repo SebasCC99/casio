@@ -5,7 +5,6 @@ import { useWebSocket } from "@effection-contrib/websocket";
 import { each, main } from "@effection/effection";
 import { generate } from "@babia/uuid-v7";
 
-// Create a single supabase client for interacting with your database
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_ANON_KEY")!,
@@ -28,39 +27,79 @@ async function insertToSupabase(aggregate: Schema) {
   }
 }
 
-await main(function* () {
-  const socket = yield* useWebSocket(Deno.env.get("WEBSOCKET_CLUSTER_URL")!);
+const socket = new WebSocket(Deno.env.get("WEBSOCKET_CLUSTER_URL")!);
 
+socket.onopen = () => {
   socket.send(JSON.stringify({
     action: "auth",
     params: Deno.env.get("POLYGON_API_KEY"),
   }));
+};
 
-  for (const message of yield* each(socket)) {
-    const wsMessage = message as WebSocketMessageEvent;
-    const [data] = JSON.parse(wsMessage.data);
+socket.onmessage = (event) => {
+  const [wsMessage] = JSON.parse(event.data);
 
-    if (data.message === "authenticated") {
-      socket.send(
-        JSON.stringify({ "action": "subscribe", "params": "A.AAPL" }),
-      );
-    }
+  console.log(wsMessage);
 
-    if (data.sym) {
-      const wsData = data as Aggregate;
-      insertToSupabase({
-        ticker: wsData.sym,
-        open: wsData.o,
-        close: wsData.c,
-        high: wsData.h,
-        low: wsData.l,
-        vwap: wsData.vw,
-        aggregate_start_time: wsData.s,
-        aggregate_end_time: wsData.e,
-        aggregate_type: wsData.ev,
-      });
-    }
-
-    yield* each.next();
+  if (wsMessage.message === "authenticated") {
+    socket.send(
+      JSON.stringify({ "action": "subscribe", "params": "A.AAPL" }),
+    );
   }
-});
+
+  if (wsMessage.sym) {
+    const wsData = wsMessage as Aggregate;
+    insertToSupabase({
+      ticker: wsData.sym,
+      open: wsData.o,
+      close: wsData.c,
+      high: wsData.h,
+      low: wsData.l,
+      vwap: wsData.vw,
+      aggregate_start_time: wsData.s,
+      aggregate_end_time: wsData.e,
+      aggregate_type: wsData.ev,
+    });
+  }
+};
+
+socket.onerror = (error) => console.error("Error at the socket level:", error);
+
+Deno.serve(() => new Response("Hello world"));
+
+// await main(function* () {
+//   const socket = yield* useWebSocket(Deno.env.get("WEBSOCKET_CLUSTER_URL")!);
+
+//   socket.send(JSON.stringify({
+//     action: "auth",
+//     params: Deno.env.get("POLYGON_API_KEY"),
+//   }));
+
+//   for (const message of yield* each(socket)) {
+//     const wsMessage = message as WebSocketMessageEvent;
+//     const [data] = JSON.parse(wsMessage.data);
+
+//     if (data.message === "authenticated") {
+//       socket.send(
+//         JSON.stringify({ "action": "subscribe", "params": "A.AAPL" }),
+//       );
+//     }
+
+//     if (data.sym) {
+//       const wsData = data as Aggregate;
+//       insertToSupabase({
+//         ticker: wsData.sym,
+//         open: wsData.o,
+//         close: wsData.c,
+//         high: wsData.h,
+//         low: wsData.l,
+//         vwap: wsData.vw,
+//         aggregate_start_time: wsData.s,
+//         aggregate_end_time: wsData.e,
+//         aggregate_type: wsData.ev,
+//       });
+//     }
+
+//     yield* each.next();
+//   }
+// });
