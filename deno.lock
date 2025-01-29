@@ -15,6 +15,7 @@
     "npm:@supabase/postgrest-js@1.18.1": "1.18.1",
     "npm:@supabase/realtime-js@2.11.2": "2.11.2",
     "npm:@supabase/storage-js@2.7.1": "2.7.1",
+    "npm:@types/node@*": "22.5.4",
     "npm:effection@3.0.3": "3.0.3"
   },
   "jsr": {
