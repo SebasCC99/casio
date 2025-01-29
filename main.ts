@@ -11,7 +11,7 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_ANON_KEY")!,
 );
 
-Deno.serve({ path: "/" }, (_req) => new Response("Hello, world"));
+Deno.serve((_req) => new Response("Hello, world"));
 
 // const socket = new WebSocket(Deno.env.get("WEBSOCKET_CLUSTER_URL")!);
 
