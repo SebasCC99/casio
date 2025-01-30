@@ -60,10 +60,14 @@ socket.onmessage = (event) => {
   }
 };
 
-setInterval(() => {
-  console.log("ping");
-  socket.send("ping");
-}, 60000);
+socket.onclose = (event) => {
+  console.log({ event });
+};
+
+// setInterval(() => {
+//   console.log("ping");
+//   socket.send("ping");
+// }, 60000);
 
 socket.onerror = (error) => console.error("Error at the socket level:", error);
 
