@@ -26,50 +26,55 @@ async function insertToSupabase(aggregate: Schema) {
 
 const socket = new WebSocket(Deno.env.get("WEBSOCKET_CLUSTER_URL")!);
 
-socket.onopen = () => {
-  socket.send(JSON.stringify({
-    action: "auth",
-    params: Deno.env.get("POLYGON_API_KEY"),
-  }));
+const establishWebSocketConnection = () => {
+  socket.onopen = () => {
+    socket.send(JSON.stringify({
+      action: "auth",
+      params: Deno.env.get("POLYGON_API_KEY"),
+    }));
+  };
+
+  socket.onmessage = (event) => {
+    const [wsMessage] = JSON.parse(event.data);
+
+    console.log(wsMessage);
+
+    if (wsMessage.message === "authenticated") {
+      socket.send(
+        JSON.stringify({ "action": "subscribe", "params": "A.AAPL" }),
+      );
+    }
+
+    if (wsMessage.sym) {
+      const wsData = wsMessage as Aggregate;
+      insertToSupabase({
+        ticker: wsData.sym,
+        open: wsData.o,
+        close: wsData.c,
+        high: wsData.h,
+        low: wsData.l,
+        vwap: wsData.vw,
+        aggregate_start_time: wsData.s,
+        aggregate_end_time: wsData.e,
+        aggregate_type: wsData.ev,
+      });
+    }
+  };
+
+  socket.onclose = (event) => {
+    console.log(event);
+    new WebSocket(Deno.env.get("WEBSOCKET_CLUSTER_URL")!);
+  };
+
+  socket.onerror = (error) =>
+    console.error("Error at the socket level:", error);
+
+  setInterval(() => {
+    socket.send("ping");
+  }, 10000);
 };
 
-socket.onmessage = (event) => {
-  const [wsMessage] = JSON.parse(event.data);
-
-  console.log(wsMessage);
-
-  if (wsMessage.message === "authenticated") {
-    socket.send(
-      JSON.stringify({ "action": "subscribe", "params": "A.AAPL" }),
-    );
-  }
-
-  if (wsMessage.sym) {
-    const wsData = wsMessage as Aggregate;
-    insertToSupabase({
-      ticker: wsData.sym,
-      open: wsData.o,
-      close: wsData.c,
-      high: wsData.h,
-      low: wsData.l,
-      vwap: wsData.vw,
-      aggregate_start_time: wsData.s,
-      aggregate_end_time: wsData.e,
-      aggregate_type: wsData.ev,
-    });
-  }
-};
-
-socket.onclose = (event) => {
-  console.log(event);
-};
-
-// setInterval(() => {
-//   console.log("ping");
-//   socket.send("ping");
-// }, 60000);
-
-socket.onerror = (error) => console.error("Error at the socket level:", error);
+establishWebSocketConnection();
 
 Deno.serve(() => new Response("Hello world"));
 
