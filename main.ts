@@ -1,8 +1,6 @@
 import "@std/dotenv/load";
 
 import { createClient } from "@supabase/supabase-js";
-import { useWebSocket } from "@effection-contrib/websocket";
-import { each, main } from "@effection/effection";
 import { generate } from "@babia/uuid-v7";
 
 const supabase = createClient(
@@ -21,7 +19,6 @@ async function insertToSupabase(aggregate: Schema) {
       });
 
     if (error) throw error;
-    console.log("Data inserted successfully");
   } catch (error) {
     console.error("Error inserting data:", error);
   }
@@ -62,6 +59,11 @@ socket.onmessage = (event) => {
     });
   }
 };
+
+setInterval(() => {
+  console.log("ping");
+  socket.send("ping");
+}, 60000);
 
 socket.onerror = (error) => console.error("Error at the socket level:", error);
 
