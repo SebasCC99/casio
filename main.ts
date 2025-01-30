@@ -61,7 +61,7 @@ socket.onmessage = (event) => {
 };
 
 socket.onclose = (event) => {
-  console.log({ event });
+  console.log(event);
 };
 
 // setInterval(() => {
