@@ -26,91 +26,47 @@ async function insertToSupabase(aggregate: Schema) {
 
 const socket = new WebSocket(Deno.env.get("WEBSOCKET_CLUSTER_URL")!);
 
-const establishWebSocketConnection = () => {
-  socket.onopen = () => {
-    socket.send(JSON.stringify({
-      action: "auth",
-      params: Deno.env.get("POLYGON_API_KEY"),
-    }));
-  };
-
-  socket.onmessage = (event) => {
-    const [wsMessage] = JSON.parse(event.data);
-
-    console.log(wsMessage);
-
-    if (wsMessage.message === "authenticated") {
-      socket.send(
-        JSON.stringify({ "action": "subscribe", "params": "A.AAPL" }),
-      );
-    }
-
-    if (wsMessage.sym) {
-      const wsData = wsMessage as Aggregate;
-      insertToSupabase({
-        ticker: wsData.sym,
-        open: wsData.o,
-        close: wsData.c,
-        high: wsData.h,
-        low: wsData.l,
-        vwap: wsData.vw,
-        aggregate_start_time: wsData.s,
-        aggregate_end_time: wsData.e,
-        aggregate_type: wsData.ev,
-      });
-    }
-  };
-
-  socket.onclose = (event) => {
-    console.log(event);
-    new WebSocket(Deno.env.get("WEBSOCKET_CLUSTER_URL")!);
-  };
-
-  socket.onerror = (error) =>
-    console.error("Error at the socket level:", error);
-
-  setInterval(() => {
-    socket.send("ping");
-  }, 10000);
+socket.onopen = () => {
+  socket.send(JSON.stringify({
+    action: "auth",
+    params: Deno.env.get("POLYGON_API_KEY"),
+  }));
 };
 
-establishWebSocketConnection();
+socket.onmessage = (event) => {
+  const [wsMessage] = JSON.parse(event.data);
+
+  console.log(JSON.stringify(wsMessage));
+
+  if (wsMessage.message === "authenticated") {
+    socket.send(
+      JSON.stringify({ "action": "subscribe", "params": "A.AAPL" }),
+    );
+  }
+
+  if (wsMessage.sym) {
+    const wsData = wsMessage as Aggregate;
+    insertToSupabase({
+      ticker: wsData.sym,
+      open: wsData.o,
+      close: wsData.c,
+      high: wsData.h,
+      low: wsData.l,
+      vwap: wsData.vw,
+      aggregate_start_time: wsData.s,
+      aggregate_end_time: wsData.e,
+      aggregate_type: wsData.ev,
+    });
+  }
+};
+
+socket.onclose = (event) => {
+  console.log(event);
+};
+
+socket.onerror = (error) => {
+  console.log(error);
+  console.error("Error at the socket level:", error);
+};
 
 Deno.serve(() => new Response("Hello world"));
-
-// await main(function* () {
-//   const socket = yield* useWebSocket(Deno.env.get("WEBSOCKET_CLUSTER_URL")!);
-
-//   socket.send(JSON.stringify({
-//     action: "auth",
-//     params: Deno.env.get("POLYGON_API_KEY"),
-//   }));
-
-//   for (const message of yield* each(socket)) {
-//     const wsMessage = message as WebSocketMessageEvent;
-//     const [data] = JSON.parse(wsMessage.data);
-
-//     if (data.message === "authenticated") {
-//       socket.send(
-//         JSON.stringify({ "action": "subscribe", "params": "A.AAPL" }),
-//       );
-//     }
-
-//     if (data.sym) {
-//       const wsData = data as Aggregate;
-//       insertToSupabase({
-//         ticker: wsData.sym,
-//         open: wsData.o,
-//         close: wsData.c,
-//         high: wsData.h,
-//         low: wsData.l,
-//         vwap: wsData.vw,
-//         aggregate_start_time: wsData.s,
-//         aggregate_end_time: wsData.e,
-//         aggregate_type: wsData.ev,
-//       });
-//     }
-
-//     yield* each.next();
-//   }
-// });
